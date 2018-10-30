@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+
+int op = 0;
+
 void imprimeM(int n, float** m);
 void leMatriz(float**m,int n,float dA,float dB,float dP,float dC,float dD);
 float** criaMatriz(int n);
@@ -12,8 +15,9 @@ int main(){
 	int n;
 	float** m;
 	float* b;
-	float dA,dB, dP, dC, dD;
-
+	float dA,dB, dP, dC, dD;	
+	
+	
 	printf("Insira o valor de N: ");
 	scanf("%d",&n);
 	printf("Digite o valor de dA: ");
@@ -33,6 +37,8 @@ int main(){
 	triangulariza(n, m, b);
 	imprimeM(n, m);
 	liberaMatriz(n,m);
+	printf("\nNumero de operações: %d\n",op);
+	
 	return 0; 
 }
 
@@ -75,14 +81,15 @@ float* criaB(int n, float**m){
 }
 
 void imprimeM(int n, float** m){
-	
+	printf("\n---------------Matriz---------------\n"); 
 	for(int i = 0;i<n;i++){
 		printf(" "); 
 		for(int j=0;j<n;j++){
-			printf("%.2f ",m[i][j]);
+			printf("  %.3f ",m[i][j]);
 		}
 		printf("\n"); 
 	}
+	//printf("\n--------------- Fim  ---------------\n"); 
 }
 
 void liberaMatriz(int n, float** m){
@@ -101,21 +108,23 @@ void seidel(int n, float** m){
 }*/
 
 void triangulariza(int n, float** m, float* b){
-	
-	int indicePivo;
+	op = 0;	
+	int indicePivo, auxInt;
 	float aux, maior, mult;
-	
+
 	for(int k=0;k<(n-1);k++)
     {
        indicePivo = k;
        maior = fabs(m[k][k]);
        for(int i=k+1; i<= k+2;i++){
-			if(i >= n-2){
-				if(i == n-2){
+			if(k >= n-2){
+				if(k == n-2){
 					if(fabs(m[i][k]) > maior){
 						maior = fabs(m[i][k]);
 						indicePivo = i;
+						op++; // fabs é uma operação contavel?
 					}
+					i++;
 				}
 					
 			}
@@ -124,6 +133,7 @@ void triangulariza(int n, float** m, float* b){
 		   		if(fabs(m[i][k]) > maior){
 		   			maior = fabs(m[i][k]);
 		   			indicePivo = i;
+		   			op++;
 		   		}
 			}
        }
@@ -144,35 +154,36 @@ void triangulariza(int n, float** m, float* b){
 		printf("\n");*/
        
 
-	// NÃO TERMINADO !!! : acho q ta fazendo certo porém ta dando segmentation fault por causa dos limites da matriz
-       for(int i=(k+1);i<= k+2;i++){
-
-			/*alguma coisa errada nesses ifs que é pra olhar as duas ultimas posições da diagonal principal que se comportam diferente das outras linhas*/
-			if(i >= n-2){
+	
+   	 	for(int i=(k+1);i<= k+2;i++){
+   	 		auxInt = i;
+			if(k >= n-2){
 				if(k == n-2){
 					 mult = m[i][k]/m[k][k];
 					i += 2;
 				}
 			}
 			else{
-           mult = m[i][k]/m[k][k];	
+           		mult = m[i][k]/m[k][k];
 			}
-           m[i][k]=0; // para visualização da matriz triangularizada
-           printf("   m = %f;", mult);
+			op++;
+        	m[auxInt][k]=0; // para visualização da matriz triangularizada
+        	printf("   m = %f;", mult);
          
            //for(j=(k+1);j<n;j++)
-           for(int j=(k);j<n;j++)
-           {
-              m[i][j]= m[i][j]- mult*m[k][j];
-           } // fim  j
-           b[i]= b[i]- mult*b[k];
-
+        	for(int j=k+1;j<n;j++)
+        	{
+        		m[auxInt][j]= m[auxInt][j] - mult*m[k][j];
+        		op = op +2;
+        	} // fim  j
+           b[auxInt]= b[auxInt]- mult*b[k];
+				op = op + 2;
         } // fim linha i
-
+	
       // Mostrando a matriz intermediaria
       printf("\n - Matriz apos a etapa %d ------\n", k);
     	imprimeM(n,m);
-
+		printf("\n");
 
     }
 }
