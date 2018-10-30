@@ -4,17 +4,19 @@
 
 int op = 0;
 
-void imprimeM(int n, float** m);
+void imprimeM(int n, float** m, float* b);
 void leMatriz(float**m,int n,float dA,float dB,float dP,float dC,float dD);
 float** criaMatriz(int n);
 void liberaMatriz(int n, float** m);
 float* criaB(int n, float**m);
 void triangulariza(int n, float** m, float* b);
+float* substituicaoRegressiva(int n, float** m , float* b);
+void imprimeVetor(int n, float* a);
 
 int main(){
 	int n;
 	float** m;
-	float* b;
+	float *b, *x;
 	float dA,dB, dP, dC, dD;	
 	
 	
@@ -30,12 +32,20 @@ int main(){
 	scanf("%f", &dC);
 	printf("Digite o valor de dD: ");
 	scanf("%f", &dD);
+	
 	m = criaMatriz(n);
-	b = criaB(n,m);
+	
 	leMatriz(m,n,dA,dB,dP,dC,dD);
-	imprimeM(n,m);
+	b = criaB(n, m);
+	
+	imprimeM(n, m, b);
+	
 	triangulariza(n, m, b);
-	imprimeM(n, m);
+	imprimeM(n, m, b);
+	
+	x = substituicaoRegressiva(n, m, b);
+	imprimeVetor(n,x);
+	
 	liberaMatriz(n,m);
 	printf("\nNumero de operações: %d\n",op);
 	
@@ -76,20 +86,43 @@ float* criaB(int n, float**m){
       {
            b[i]= b[i] + m[i][j];
       }
+      //printf("%.1f",b[i]);
+	}
+	//imprimeM(n,m,b);
+	return b;
+}
+
+float* criaX(int n){
+	float* b = (float*) malloc (n*sizeof(float));
+	
+	for(int i=0;i<n;i++)
+    {
+      b[i]=0;
 	}
 	return b;
 }
 
-void imprimeM(int n, float** m){
+void imprimeM(int n, float** m, float* b){
 	printf("\n---------------Matriz---------------\n"); 
 	for(int i = 0;i<n;i++){
 		printf(" "); 
 		for(int j=0;j<n;j++){
-			printf("  %.3f ",m[i][j]);
+			printf(" %.3f ",m[i][j]);
 		}
-		printf("\n"); 
+		printf("| %.3f ",b[i]);
+		printf("\n");
+		 
 	}
 	//printf("\n--------------- Fim  ---------------\n"); 
+}
+
+void imprimeVetor(int n, float* a){
+	printf("");
+	for(int i=0;i<n;i++){
+		printf("| %f |",a[i]);
+		printf("\n");
+	}
+	printf("\n");
 }
 
 void liberaMatriz(int n, float** m){
@@ -122,7 +155,6 @@ void triangulariza(int n, float** m, float* b){
 					if(fabs(m[i][k]) > maior){
 						maior = fabs(m[i][k]);
 						indicePivo = i;
-						op++; // fabs é uma operação contavel?
 					}
 					i++;
 				}
@@ -133,7 +165,6 @@ void triangulariza(int n, float** m, float* b){
 		   		if(fabs(m[i][k]) > maior){
 		   			maior = fabs(m[i][k]);
 		   			indicePivo = i;
-		   			op++;
 		   		}
 			}
        }
@@ -182,9 +213,38 @@ void triangulariza(int n, float** m, float* b){
 	
       // Mostrando a matriz intermediaria
       printf("\n - Matriz apos a etapa %d ------\n", k);
-    	imprimeM(n,m);
+    	imprimeM(n, m, b);
 		printf("\n");
-
+	
 
     }
+}
+/*
+  3.000  2.000  1.000  1.000  2.000  0.000  0.000  0.000 | 9.000 
+  0.000  3.000  2.000  1.000  1.000  2.000  0.000  0.000 | 9.000 
+  0.000  0.000  3.000  2.000  1.000  1.000  2.000  0.000 | 9.000 
+  0.000  0.000  0.000  3.000  2.000  1.000  1.000  2.000 | 9.000 
+  0.000  0.000  0.000  0.000  3.000  2.000  1.000  1.000 | 7.000 
+  0.000  0.000  0.000  0.000  0.000  3.000  2.000  1.000 | 6.000 
+  0.000  0.000  0.000  0.000  0.000  0.000  -0.750  -0.373 | -1.123 
+  0.000  0.000  0.000  0.000  0.000  0.000  0.000  1.238 | 1.238 
+
+*/
+float* substituicaoRegressiva(int n, float** m , float* b){
+	float* x = criaX(n);
+	float soma;
+	
+	x[n-1]= b[n-1]/m[n-1][n-1]; 
+    for(int i=(n-2);i>=0;i--)  
+    {
+      soma=b[i];
+      for(int j=i+1;(j<n)&&(j<(i+5));j++)
+      {
+        soma = soma - m[i][j]*x[j];
+      }
+      x[i]= soma/m[i][i];
+      printf(" %f\n",soma);
+    }
+    
+    return x;
 }
