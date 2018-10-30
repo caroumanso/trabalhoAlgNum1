@@ -13,7 +13,7 @@ void triangulariza(int n, float** m, float* b);
 float* substituicaoRegressiva(int n, float** m , float* b);
 void imprimeVetor(int n, float* a);
 void gauss(int n, float** m);
-
+void seidel(int n,)
 
 int main(){
 	int n;
@@ -41,6 +41,8 @@ int main(){
 	//
 	gauss(n,m);
 	
+	
+	leMatriz(m,n,dA,dB,dP,dC,dD);
 	//
 	seidel(n,m);
 	
@@ -82,29 +84,26 @@ void seidel(int n, float** m){
       iter++;
       dmax = 0;
       xmax = 0;
-      for(i=0;i< n;i++)
-      {
-        soma=0;
-        for(j=0;j<i ;j++)
-        {
-          soma = soma + A[i][j]*X[j];
-        }
-      printf("\n Vetor1");
-        for(j=(i+1);j<n;j++)
-        {
-          soma = soma + A[i][j]*XA[j];
-        }
-      X[i]= (b[i]-soma )/A[i][i];
-      if(X[i] > xmax){
-        xmax = X[i];
-      }
-    printf("\n Vetor2");
-      d[i]=fabs(XA[i]-X[i]);        
-      if(d[i]>dmax){
-        dmax = d[i];
-      }
-      } // fim for i
-  distRel = dmax/xmax;
+      for(i=0;i< n;i++){
+		  soma=0;
+		  for(j=0;j<i ;j++){
+		      soma = soma + A[i][j]*X[j];
+		  }
+		  printf("\n Vetor1");
+		  for(j=(i+1);j<n;j++){
+		      soma = soma + A[i][j]*XA[j];
+		  }
+		  X[i]= (b[i]-soma )/A[i][i];
+		  if(X[i] > xmax){
+		    xmax = X[i];
+		  }
+		  printf("\n Vetor2");
+		  d[i]=fabs(XA[i]-X[i]);        
+		  if(d[i]>dmax){
+		  	dmax = d[i];
+		  }
+     } // fim for i
+  	distRel = dmax/xmax;
 }*/
 
 //
@@ -214,6 +213,7 @@ void leMatriz(float**m,int n,float dA,float dB,float dP,float dC,float dD){
 				case 0 : m[i][j] = dP; break;
 				case 1 : m[i][j] = dB; break;
 				case 2 : m[i][j] = dA; break;
+				default : m[i][j] = 0;
 			}
 		}
 	}
