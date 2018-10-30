@@ -185,5 +185,6 @@ void triangulariza(int n, float** m, float* b){
     	imprimeM(n,m);
 		printf("\n");
 
+
     }
 }
