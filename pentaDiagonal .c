@@ -13,7 +13,9 @@ void triangulariza(int n, float** m, float* b);
 float* substituicaoRegressiva(int n, float** m , float* b);
 void imprimeVetor(int n, float* a);
 void gauss(int n, float** m);
-void seidel(int n,)
+void seidel(int n, float **m);
+float* criaX(int n);
+float* criaXSeidel(int n, float *b, float **m);
 
 int main(){
 	int n;
@@ -38,12 +40,12 @@ int main(){
 	m = criaMatriz(n);
 	leMatriz(m,n,dA,dB,dP,dC,dD);
 	
-	//
-	gauss(n,m);
+	
+//	gauss(n,m);
 	
 	
 	leMatriz(m,n,dA,dB,dP,dC,dD);
-	//
+	
 	seidel(n,m);
 	
 	liberaMatriz(n,m);
@@ -55,16 +57,16 @@ int main(){
 //
 void gauss(int n, float** m){
 	
-	b = criaB(n, m);
+	float *b = criaB(n, m);
 	
 	imprimeM(n, m, b);
 	
 	triangulariza(n, m, b);
 	imprimeM(n, m, b);
 	
-	x = substituicaoRegressiva(n, m, b);
+	float *x = substituicaoRegressiva(n, m, b);
 	imprimeVetor(n,x);
-	
+
 	free(b);
 	free(x);
 	printf("\nNumero de operações: %d\n",op);
@@ -73,38 +75,51 @@ void gauss(int n, float** m){
 
 
 /*
+  1.000  1.000  2.000  0.000  0.000  0.000  0.000  0.000 | 4.000 
+  2.000  1.000  1.000  2.000  0.000  0.000  0.000  0.000 | 6.000 
+  3.000  2.000  1.000  1.000  2.000  0.000  0.000  0.000 | 9.000 
+  0.000  3.000  2.000  1.000  1.000  2.000  0.000  0.000 | 9.000 
+  0.000  0.000  3.000  2.000  1.000  1.000  2.000  0.000 | 9.000 
+  0.000  0.000  0.000  3.000  2.000  1.000  1.000  2.000 | 9.000 
+  0.000  0.000  0.000  0.000  3.000  2.000  1.000  1.000 | 7.000 
+  0.000  0.000  0.000  0.000  0.000  3.000  2.000  1.000 | 6.000 
+
+*/
 void seidel(int n, float** m){
-	float tol = 0.000001;
-    float distRel = 1.0;
-    float d[N];
-    int dmax,xmax;
-    
+	float *b = criaB(n, m);
+	float tol = 0.0000000001, distRel = 1.0, soma;
+    float d[n];
+    int dmax,xmax, i,j;
+    float *xa = criaXSeidel(n, b, m);
+	
+	float *x = criaX(n);
     while(distRel > tol){
-      iter = 0;
-      iter++;
       dmax = 0;
       xmax = 0;
       for(i=0;i< n;i++){
-		  soma=0;
-		  for(j=0;j<i ;j++){
-		      soma = soma + A[i][j]*X[j];
-		  }
-		  printf("\n Vetor1");
-		  for(j=(i+1);j<n;j++){
-		      soma = soma + A[i][j]*XA[j];
-		  }
-		  X[i]= (b[i]-soma )/A[i][i];
-		  if(X[i] > xmax){
-		    xmax = X[i];
-		  }
-		  printf("\n Vetor2");
-		  d[i]=fabs(XA[i]-X[i]);        
-		  if(d[i]>dmax){
-		  	dmax = d[i];
+			soma=0;
+			
+			for(j=i-1;j<i && j >= 0 ;j++){
+			  soma = soma + m[i][j]*x[j];
+			}
+			
+
+			  for(j=(i+1);(j<= i+2) && j < n;j++){
+				  soma = soma + m[i][j]*xa[j];
+			  }
+			  x[i]= (b[i]-soma )/m[i][i];
+			  if(x[i] > xmax){
+				xmax = x[i];
+			  }
+			  d[i]=fabs(xa[i]-x[i]);        
+			  if(d[i]>dmax){
+			  	dmax = d[i];
 		  }
      } // fim for i
   	distRel = dmax/xmax;
-}*/
+	}
+	imprimeVetor(n, x);
+}
 
 //
 void triangulariza(int n, float** m, float* b){
@@ -253,6 +268,15 @@ float* criaX(int n){
 	return b;
 }
 
+float* criaXSeidel(int n, float *b, float **m){
+	float *x = (float*)malloc(n*sizeof(float));
+
+	for(int i = 0; i < n; i++){
+		x[i] = b[i]/m[i][i];
+	}
+	
+	return x;
+}
 void imprimeM(int n, float** m, float* b){
 	printf("\n---------------Matriz---------------\n"); 
 	for(int i = 0;i<n;i++){
