@@ -56,11 +56,11 @@ void gauss(int n, float **m)
 	float *b = criaB(n, m);
 	
 	printf("\n\t-- Matriz Inicial --\n");
-	imprimeM(n, m, b);
+	//imprimeM(n, m, b);
 
 	triangulariza(n, m, b);
 	printf("\n\t-- Matriz Triangularizada --\n");
-	imprimeM(n, m, b);
+	//imprimeM(n, m, b);
 
 	float *x = substituicaoRegressiva(n, m, b);
 	printf("\n\t-- Vetor Resposta --\n");
@@ -77,14 +77,13 @@ void seidel(int n, float **m)
 	double tol = 0.0000000001, distRel = 1.0, soma;
 	double d[n];
 	double dmax, xmax;
-	int i, j;
+	int i, j, it=0,itera=10000;
 	float *xa = criaXSeidel(n, b, m);
 
 	float *x = criaXSeidel(n, b, m);
-	printf("\n\t-- Matriz Inicial --\n");
-	imprimeM(n,m,b);
-
-	while (distRel > tol)
+	printf("\n\t-- Gauss-Seidel --\n");
+	
+	while ((distRel > tol))
 	{
 		dmax = 0;
 		xmax = 0;
@@ -94,31 +93,31 @@ void seidel(int n, float **m)
 			//esquerda do pivor
 			j = i-2;
 			if(j >= 0){
-				soma = soma + m[i][j] * x[j];
+				soma = soma + (m[i][j] * x[j]);
 			}
 			j = i-1;
 			if(j >= 0){
-				soma = soma + m[i][j] * x[j];
+				soma = soma + (m[i][j] * x[j]);
 			}
 			
 			//direita do pivor
 			j = i+1;
 			if(j < n){
-				soma = soma + m[i][j] * xa[j];
+				soma = soma + (m[i][j] * xa[j]);
 			}
 			j=i+2;
 			if(j < n){
-				soma = soma + m[i][j] * xa[j];
+				soma = soma + (m[i][j] * xa[j]);
 			}
 
 			x[i] = (b[i] - soma) / m[i][i];
-			//printf("\nx[i]: %f",x[i]);
+
 			if (x[i] > xmax){
 				xmax = x[i];
+
 			}
 			
 			d[i] = fabs(xa[i] - x[i]);
-			//printf("\nd[i]: %f",d[i]);
 			
 			if (d[i] > dmax){
 				dmax = d[i];
@@ -126,9 +125,11 @@ void seidel(int n, float **m)
 
 		} // fim for i
 		distRel = dmax / xmax;
-		printf("%lf ", distRel);
+		for(i = 0; i < n; i++){
+			xa[i]=x[i];
+		}
 	}
-	
+
 	printf("\n\t-- Vetor Resposta --\n");
 	imprimeVetor(n, x);
 	free(b);
@@ -201,9 +202,9 @@ void triangulariza(int n, float **m, float *b)
 			}
 			op++;
 			m[auxInt][k] = 0; // para visualização da matriz triangularizada
-			printf("m linha %d = %f; ",i, mult);
+			//printf("m linha %d = %f; ",i, mult);
 
-			//for(j=(k+1);j<n;j++)
+			
 			for (int j = k + 1; j < n; j++)
 			{
 				m[auxInt][j] = m[auxInt][j] - mult * m[k][j];
@@ -214,9 +215,9 @@ void triangulariza(int n, float **m, float *b)
 		} // fim linha i
 
 		// Mostrando a matriz intermediaria
-		printf("\n\n\t-- Matriz -> Etapa %d --\n", k);
-		imprimeM(n, m, b);
-		printf("\n");
+		//printf("\n\n\t-- Matriz -> Etapa %d --\n", k);
+		//imprimeM(n, m, b);
+		//printf("\n");
 	}
 }
 
