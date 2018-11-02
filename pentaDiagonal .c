@@ -4,38 +4,38 @@
 
 int op = 0;
 
-void imprimeM(int n, double **m, double *b);
-void leMatriz(double **m, int n, double dA, double dB, double dP, double dC, double dD);
-double **criaMatriz(int n);
-void liberaMatriz(int n, double **m);
-double *criaB(int n, double **m);
-void triangulariza(int n, double **m, double *b);
-double *substituicaoRegressiva(int n, double **m, double *b);
-void imprimeVetor(int n, double *a);
-void gauss(int n, double **m);
-void seidel(int n, double **m);
-double *criaX(int n);
-double *criaXSeidel(int n, double *b, double **m);
-void erro(int n, double*a);
+void imprimeM(int n, float **m, float *b);
+void leMatriz(float **m, int n, float dA, float dB, float dP, float dC, float dD);
+float **criaMatriz(int n);
+void liberaMatriz(int n, float **m);
+float *criaB(int n, float **m);
+void triangulariza(int n, float **m, float *b);
+float *substituicaoRegressiva(int n, float **m, float *b);
+void imprimeVetor(int n, float *a);
+void gauss(int n, float **m);
+void seidel(int n, float **m);
+float *criaX(int n);
+float *criaXSeidel(int n, float *b, float **m);
+void erro(int n, float*a);
 
 int main(){
 	int n;
-	double **m;
-	double *b, *x;
-	double dA, dB, dP, dC, dD;
+	float **m;
+	float *b, *x;
+	float dA, dB, dP, dC, dD;
 
 	printf("Insira o valor de N: ");
 	scanf("%d", &n);
 	printf("Digite o valor de dA: ");
-	scanf("%lf", &dA);
+	scanf("%f", &dA);
 	printf("Digite o valor de dB: ");
-	scanf("%lf", &dB);
+	scanf("%f", &dB);
 	printf("Digite o valor de dP: ");
-	scanf("%lf", &dP);
+	scanf("%f", &dP);
 	printf("Digite o valor de dC: ");
-	scanf("%lf", &dC);
+	scanf("%f", &dC);
 	printf("Digite o valor de dD: ");
-	scanf("%lf", &dD);
+	scanf("%f", &dD);
 
 	m = criaMatriz(n);
 
@@ -50,44 +50,61 @@ int main(){
 }
 
 //
-void gauss(int n, double **m){
+void gauss(int n, float **m){
 
-	double *b = criaB(n, m);
-	double *erro = (double*)malloc(sizeof(double));
-	printf("\n\t01 - Iniciando Eliminacao de Gauss\n");
-	/*printf("\n\t-- Matriz Inicial --\n");
-		
-	imprimeM(n, m, b);*/
+	float *b = criaB(n, m);
+	printf("\n\n\t01 - Iniciando Eliminacao de Gauss\n");
+	printf("\n\t-- Matriz Inicial --\n");
+	if(n<=20){
+		imprimeM(n, m, b);
+	}else{
+		printf("\t\t - Matriz muito grande.");
+	}
 
 	triangulariza(n, m, b);
 	/*printf("\n\t-- Matriz Triangularizada --\n");
 	imprimeM(n, m, b);*/
 
-	double *x = substituicaoRegressiva(n, m, b);
-	printf("\n\t01.1 - Gravando Vetor Resposta\n");
-	imprimeVetor(n, x);
-	
-	printf("\n\t01.1 - Gravando Vetor Resposta\n");
-	erro(n, x);
+	float *x = substituicaoRegressiva(n, m, b);
+	printf("\n\t-- Matriz Final --\n");
+	if(n<=20){
+		imprimeM(n, m, b);
+	}else{
+		printf("\t\t - Matriz muito grande.");
+	}
 
+	printf("\n\t01.1 - Gravando Vetor Resposta\n");
+	if(n<=20){
+		imprimeVetor(n, x);
+	}else{
+		printf("\t\t - Matriz muito grande.");
+	}
+	printf("\n\t01.2 - Numero de operações em Eliminacao de Gauss: %d\n", op);
+	printf("\n\t01.3 - Analizando Erro Gauss: \n");
+	erro(n, x);
 	free(b);
 	free(x);
-	printf("\n\t01.2 - Numero de operações em Eliminacao de Gauss: %d\n", op);
 }
 
-void seidel(int n, double **m){
-	double *b = criaB(n, m);
-	double tol = 0.0000000001, distRel = 1.0, soma;
-	double d[n];
-	double dmax, xmax;
+void seidel(int n, float **m){
+	float *b = criaB(n, m);
+	float tol = 0.0000000001, distRel = 1.0, soma;
+	float d[n];
+	float dmax, xmax;
 	int i, j, it=0;
 	
-	double *xa = criaXSeidel(n, b, m);
-	double *x = criaXSeidel(n, b, m);
+	float *xa = criaXSeidel(n, b, m);
+	float *x = criaXSeidel(n, b, m);
 
 	op = 0;
 
 	printf("\n\t02 - Iniciando Eliminicao de Gauss-Seidel\n");
+	printf("\n\t-- Matriz Inicial --\n");
+	if(n<=20){
+		imprimeM(n, m, b);
+	}else{
+		printf("\t\t - Matriz muito grande.");
+	}
 	
 	while ((distRel > tol)){
 		it++;
@@ -123,7 +140,7 @@ void seidel(int n, double **m){
 				dmax = d[i];
 			}
 
-		} // fim for i
+		}
 		distRel = dmax / xmax;
 		op++;
 		for(i = 0; i < n; i++){
@@ -131,25 +148,40 @@ void seidel(int n, double **m){
 		}
 	}
 
-	printf("\n\t02.1 - Vetor Resposta\n");
-	imprimeVetor(n, x);
+	printf("\n\t-- Matriz Final --\n");
+	if(n<=20){
+		imprimeM(n, m, b);
+	}else{
+		printf("\t\t - Matriz muito grande.");
+	}
+	
+
+	printf("\n\t02.1 - Gravando Vetor Resposta\n");
+	if(n<=20){
+		imprimeVetor(n, x);
+	}else{
+		printf("\t\t - Matriz muito grande.");
+	}
+	
+	printf("\n\t02.2 - Numero de operações em Gauss-Seidel: %d   - Numero de Iterações: %d\n", op,it);
+	printf("\n\t02.3 - Analizando Erro de Seidel: \n");
+	erro(n, x);
+	
 	free(b);
 	free(xa);
 	free(x);
-	
-	printf("\n\t02.2 - Numero de operações em Gauss-Seidel: %d\n", op);
 }
 
 //
-void triangulariza(int n, double **m, double *b)
-{
+void triangulariza(int n, float **m, float *b){
 	op = 0;
 	int indicePivo, auxInt;
-	double aux, maior, mult;
+	float aux, maior, mult;
 
 	for (int k = 0; k < (n - 1); k++){
 		indicePivo = k;
 		maior = fabs(m[k][k]);
+		//encontra o pivo
 		for (int i = k + 1; i <= k + 2; i++){
 			if (k >= n - 2){
 				if (k == n - 2){
@@ -193,15 +225,15 @@ void triangulariza(int n, double **m, double *b)
 			}
 			op++;
 			m[auxInt][k] = 0; // para visualização da matriz triangularizada
-			//printf("m linha %d = %lf; ",i, mult);
+			//printf("m linha %d = %f; ",i, mult);
 
 			
 			for (int j = k + 1; j < n; j++){
 				m[auxInt][j] = m[auxInt][j] - mult * m[k][j];
-				op = op + 2;
+				op += 2;
 			} // fim  j
 			b[auxInt] = b[auxInt] - mult * b[k];
-			op = op + 2;
+			op += 2;
 		} // fim linha i
 
 		// Mostrando a matriz intermediaria
@@ -211,26 +243,28 @@ void triangulariza(int n, double **m, double *b)
 	}
 }
 
-double *substituicaoRegressiva(int n, double **m, double *b)
-{
-	double *x = criaX(n);
-	double soma;
+float *substituicaoRegressiva(int n, float **m, float *b){
+	float *x = criaX(n);
+	float soma;
 
 	x[n - 1] = b[n - 1] / m[n - 1][n - 1];
+	op++;
 	for (int i = (n - 2); i >= 0; i--){
 		soma = b[i];
 		for (int j = i + 1; (j < n) && (j < (i + 5)); j++){
-			soma = soma - m[i][j] * x[j];
+			soma = soma - (m[i][j] * x[j]);
+			op+=2;
 		}
 		x[i] = soma / m[i][i];
+		op++;
 	}
 
 	return x;
 }
 
-void erro(int n, double* a){
-	double emax = 0, emedio = 0, e;
-	for(int i; i<n;i++){
+void erro(int n, float* a){
+	float emax = 0, emedio = 0, e;
+	for(int i=0; i<n;i++){
 		e = fabs(a[i] - 1);
 		if(e > emax){
 			emax = e;
@@ -238,13 +272,12 @@ void erro(int n, double* a){
 		emedio += e;
 	}
 	emedio /= n;
-	printf("\nErro Max: %lf\nErro Medio: %lf\n\n",emax,emedio);
+	printf("\n\tErro Max: %.8f\n\tErro Medio: %.8f\n\n",emax,emedio);
 }
 
 // ----------------------------------------   Auxiliares  ---------------------------------------------
 
-void leMatriz(double **m, int n, double dA, double dB, double dP, double dC, double dD)
-{
+void leMatriz(float **m, int n, float dA, float dB, float dP, float dC, float dD){
 	int i, j, sub;
 	for (i = 0; i < n; i++){
 		for (j = 0; j < n; j++){
@@ -272,18 +305,16 @@ void leMatriz(double **m, int n, double dA, double dB, double dP, double dC, dou
 	}
 }
 
-double **criaMatriz(int n)
-{
-	double **m = (double **)malloc(n * sizeof(double *));
+float **criaMatriz(int n){
+	float **m = (float **)malloc(n * sizeof(float *));
 	for (int i = 0; i < n; i++){
-		m[i] = (double *)malloc(n * sizeof(double));
+		m[i] = (float *)malloc(n * sizeof(float));
 	}
 	return m;
 }
 
-double *criaB(int n, double **m)
-{
-	double *b = (double *)malloc(n * sizeof(double));
+float *criaB(int n, float **m){
+	float *b = (float *)malloc(n * sizeof(float));
 
 	for (int i = 0; i < n; i++){
 		b[i] = 0;
@@ -294,9 +325,8 @@ double *criaB(int n, double **m)
 	return b;
 }
 
-double *criaX(int n)
-{
-	double *b = (double *)malloc(n * sizeof(double));
+float *criaX(int n){
+	float *b = (float *)malloc(n * sizeof(float));
 
 	for (int i = 0; i < n; i++){
 		b[i] = 0;
@@ -304,9 +334,8 @@ double *criaX(int n)
 	return b;
 }
 
-double *criaXSeidel(int n, double *b, double **m)
-{
-	double *x = (double *)malloc(n * sizeof(double));
+float *criaXSeidel(int n, float *b, float **m){
+	float *x = (float *)malloc(n * sizeof(float));
 
 	for (int i = 0; i < n; i++){
 		x[i] = b[i] / m[i][i];
@@ -314,31 +343,32 @@ double *criaXSeidel(int n, double *b, double **m)
 
 	return x;
 }
-void imprimeM(int n, double **m, double *b)
-{
+void imprimeM(int n, float **m, float *b){
 	printf("\n");
 	for (int i = 0; i < n; i++){
 		printf(" ");
 		for (int j = 0; j < n; j++){
-			printf(" %.3lf ", m[i][j]);
+			printf(" %.3f ", m[i][j]);
 		}
-		printf("| %.3lf ", b[i]);
+		printf("| %.3f ", b[i]);
 		printf("\n");
 	}
 }
 
-void imprimeVetor(int n, double *a)
-{
-	printf("\n--- Vetor ---\n");
+void imprimeVetor(int n, float *a){
+	printf("\n\t---    Vetor    ---\n\t");
 	for (int i = 0; i < n; i++){
-		printf("| %.3lf |", a[i]);
-		printf("\n");
+		if(i<10){
+			printf("| x[0%d] = %.7f |", i, a[i]);
+		}else{
+			printf("| x[%d] = %.7f |", i, a[i]);
+		}
+		printf("\n\t");
 	}
 	printf("\n");
 }
 
-void liberaMatriz(int n, double **m)
-{
+void liberaMatriz(int n, float **m){
 	for (int i = 0; i < n; i++){
 		free(m[i]);
 	}
