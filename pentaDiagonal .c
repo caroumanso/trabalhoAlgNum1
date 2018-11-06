@@ -23,7 +23,7 @@ int main(){
 	float **m;
 	float *b, *x;
 	float dA, dB, dP, dC, dD;
-
+	
 	printf("Insira o valor de N: ");
 	scanf("%d", &n);
 	printf("Digite o valor de dA: ");
@@ -51,8 +51,8 @@ int main(){
 
 //
 void gauss(int n, float **m){
-
 	float *b = criaB(n, m);
+	
 	printf("\n\n\t01 - Iniciando Eliminacao de Gauss\n");
 	printf("\n\t-- Matriz Inicial --\n");
 	if(n<=20){
@@ -62,10 +62,8 @@ void gauss(int n, float **m){
 	}
 
 	triangulariza(n, m, b);
-	/*printf("\n\t-- Matriz Triangularizada --\n");
-	imprimeM(n, m, b);*/
-
 	float *x = substituicaoRegressiva(n, m, b);
+	
 	printf("\n\t-- Matriz Final --\n");
 	if(n<=20){
 		imprimeM(n, m, b);
@@ -79,6 +77,7 @@ void gauss(int n, float **m){
 	}else{
 		printf("\t\t - Matriz muito grande.");
 	}
+	
 	printf("\n\t01.2 - Numero de operações em Eliminacao de Gauss: %d\n", op);
 	printf("\n\t01.3 - Analizando Erro Gauss: \n");
 	erro(n, x);
@@ -90,7 +89,7 @@ void seidel(int n, float **m){
 	float *b = criaB(n, m);
 	float tol = 0.0000000001, distRel = 1.0, soma;
 	float d[n];
-	float dmax, xmax;
+	float dmax, xmax, max;
 	int i, j, it=0;
 	
 	float *xa = criaXSeidel(n, b, m);
@@ -98,7 +97,7 @@ void seidel(int n, float **m){
 
 	op = 0;
 
-	printf("\n\t02 - Iniciando Eliminicao de Gauss-Seidel\n");
+	printf("\n\t02 - Iniciando Metodo de Gauss-Seidel\n");
 	printf("\n\t-- Matriz Inicial --\n");
 	if(n<=20){
 		imprimeM(n, m, b);
@@ -106,14 +105,16 @@ void seidel(int n, float **m){
 		printf("\t\t - Matriz muito grande.");
 	}
 	
-	while ((distRel > tol)){
+	while (tol < distRel){
 		it++;
 		dmax = 0;
 		xmax = 0;
+		float xamax = 0;
 		for (i = 0; i < n; i++){
 			soma = 0;
+			d[i]=0;
 			//esquerda do pivo
-			for(j = i-2; j <= i-1; j++){
+			for(j = i-2; j < i; j++){
 				if(j >= 0){
 					soma = soma + (m[i][j] * x[j]);
 					op += 2;
@@ -121,25 +122,24 @@ void seidel(int n, float **m){
 			}
 			//direita do pivo
 			for(j = i+1; j <= i+2; j++){
-				if(j >= 0){
+				if(j < n){
 					soma = soma + (m[i][j] * xa[j]);
 					op += 2;				
 				}
 			}
 			x[i] = (b[i] - soma) / m[i][i];
 			op += 2;
-			if (fabs(x[i]) > xmax){
-				xmax = fabs(x[i]);
 
+			max = fabs(x[i]);
+			if ( max > xmax ){
+				xmax = max;
 			}
-			
-			d[i] = fabs(xa[i] - x[i]);
+
+			d[i] = fabs(x[i] - xa[i]);
 			op++;
-			
 			if (d[i] > dmax){
 				dmax = d[i];
 			}
-
 		}
 		distRel = dmax / xmax;
 		op++;
@@ -225,21 +225,16 @@ void triangulariza(int n, float **m, float *b){
 			}
 			op++;
 			m[auxInt][k] = 0; // para visualização da matriz triangularizada
-			//printf("m linha %d = %f; ",i, mult);
+			
 
 			
 			for (int j = k + 1; j < n; j++){
 				m[auxInt][j] = m[auxInt][j] - mult * m[k][j];
 				op += 2;
-			} // fim  j
+			} 
 			b[auxInt] = b[auxInt] - mult * b[k];
 			op += 2;
-		} // fim linha i
-
-		// Mostrando a matriz intermediaria
-		//printf("\n\n\t-- Matriz -> Etapa %d --\n", k);
-		//imprimeM(n, m, b);
-		//printf("\n");
+		} 
 	}
 }
 
@@ -272,7 +267,7 @@ void erro(int n, float* a){
 		emedio += e;
 	}
 	emedio /= n;
-	printf("\n\tErro Max: %.8f\n\tErro Medio: %.8f\n\n",emax,emedio);
+	printf("\n\tErro Max: %.15f\n\tErro Medio: %.15f\n\n",emax,emedio);
 }
 
 // ----------------------------------------   Auxiliares  ---------------------------------------------
